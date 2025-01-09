@@ -11,9 +11,11 @@ __pycache__/
 
 # Ignore environment variables file
 .env
+.readme
 
 # Ignore log files
 *.log
+
 
 # Ignore compiled files
 *.pyc
