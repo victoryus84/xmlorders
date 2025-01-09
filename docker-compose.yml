@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  
+  db_app:
+    container_name: db_${PROJECT_NAME}
+    image: postgres
+    ports:
+      - "${PGSQL_PORT}:${PGSQL_PORT}"
+    environment:
+      - POSTGRES_DB=${PGSQL_DATABASE}
+      - POSTGRES_USER=${PGSQL_USER}
+      - POSTGRES_PASSWORD=${PGSQL_PASS}
+    volumes:
+      - "./shared/db/data:/var/lib/postgresql/data"
+      - "./shared/db/backup:/home:rw"
+      - "./scripts/postgres/01_create_extensions.sql:/docker-entrypoint-initdb.d/01_create_extensions.sql"
+    networks:
+      - default
+    restart: always
+
+  web:
+    container_name: web_${PROJECT_NAME}
+    build: .
+    command: ["./scripts/django/entrypoint.sh", 
+              "gunicorn", 
+              "core.wsgi:application",
+              "-c", 
+              "gunicorn.conf.py"
+              ]
+    # ports:
+    #   - "8000:8000"
+    expose:
+      - "8000"
+    environment:
+      - POSTGRES_HOST=${PGSQL_HOST}
+      - POSTGRES_PORT=${PGSQL_PORT}
+      - POSTGRES_USER=${PGSQL_USER}
+      - DJANGO_USER=${SUPER_USER}
+      - DJANGO_EMAIL=${SUPER_EMAIL}
+      - DJANGO_PASS=${SUPER_PASS}
+    volumes:
+      - .:/app
+    networks:
+      - default
+    depends_on:
+      - db_app
+    restart: "no"
+
+  vue:
+    container_name: front_${PROJECT_NAME}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.vue
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+    networks:
+      - default
+    restart: always
+
+  nginx:
+    container_name: nginx_${PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "${NGINX_PORT_IN}:${NGINX_PORT_OUT}"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/app/staticfiles
+    networks:
+      - default
+    depends_on:
+      - web
+      - vue
+
+  pgadmin:
+    container_name: pga_${PROJECT_NAME}
+    image: dpage/pgadmin4
+    ports:
+      - "8081:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - "./shared/pgadmin:/var/lib/pgadmin"
+    networks:
+      - default
+    restart: always  
+  
+networks:
+  default:
+    driver: bridge

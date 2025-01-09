@@ -1,0 +1,38 @@
+HTTP_PROXY="http://127.0.0.1:8888"
+HTTPS_PROXY="https://127.0.0.1:8888"
+
+Virtual enviroment:
+python -m venv "path ex: c:\path\to\myenv"
+
+django-admin startproject mysite
+py manage.py startapp polls
+py manage.py createsuperuser
+py manage.py runserver
+
+For docker should use:
+docker-compose run --rm web python manage.py makemigrations
+docker-compose run --rm web python manage.py migrate
+docker-compose run --rm web python manage.py createsuperuser
+
+PowerShell:
+docker-compose build ; docker-compose run --rm web python manage.py makemigrations ; docker-compose run --rm web python manage.py migrate ; docker-compose up -d 
+docker-compose down ; docker-compose up -d
+
+Deploy:
+docker compose run --rm web python manage.py collectstatic
+
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='slim' %}
+{% bootstrap_messages %}        
+
+GIT notes: 
+  1) I have 2 branches (main & develop)
+  2) Merge process:
+    !!! Merge process should be do without change nothing in the project 
+    2.1) Activate "main" branch ( git checkout main )    
+    2.2) Show current branch status ( git status or git branch )
+    2.3) Do merge (  git merge develop )
+      !!! It can show modifications ( git checkout .\taracalc\settings.py )
+    2.4) Do push (  git push ) it change main branch definitively.
+    
+       
