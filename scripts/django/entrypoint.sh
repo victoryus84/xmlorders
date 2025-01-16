@@ -6,6 +6,9 @@ until pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER"; do
   sleep 2
 done
 
+# Apply django makemigrations
+python manage.py makemigrations
+
 # Apply database migrations
 python manage.py migrate
 

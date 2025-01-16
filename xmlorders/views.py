@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth.models import Group, User
-from .models import Order
-from .forms import OrderForm
-
 from rest_framework import permissions, viewsets
-from .serializers import *
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from .models import Order
+from .serializers import UserSerializer, GroupSerializer, OrderSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -23,22 +23,25 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
     
-def create_order(request):
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.representative = request.user
-            order.save()
-            return redirect('order_list')
-    else:
-        form = OrderForm()
-    return render(request, 'orders/create_order.html', {'form': form})
-
-def order_list(request):
-    orders = Order.objects.filter(representative=request.user)
-    return render(request, 'orders/order_list.html', {'orders': orders})
-
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    """
+    API endpoint that allows orders to be viewed or edited.
+    """
+    queryset = Order.objects.filter(status='pending').order_by('created_at')
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def pending(self, request):
+        """
+        Custom action to get only pending orders.
+        """
+        pending_orders = Order.objects.filter(status='pending', representative=request.user)
+        serializer = self.get_serializer(pending_orders, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def order_list(self, request):
+        orders = Order.objects.filter(representative=self.request.user, status='pending')
+        return render(self.request, 'orders/order_list.html', {'orders': orders})
+        

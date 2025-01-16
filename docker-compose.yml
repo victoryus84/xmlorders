@@ -1,10 +1,12 @@
 version: '3.8'
 
 services:
-  
+
   db_app:
-    container_name: db_${PROJECT_NAME}
-    image: postgres
+    container_name: pg_${PROJECT_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     ports:
       - "${PGSQL_PORT}:${PGSQL_PORT}"
     environment:
@@ -21,15 +23,10 @@ services:
 
   web:
     container_name: web_${PROJECT_NAME}
-    build: .
-    command: ["./scripts/django/entrypoint.sh", 
-              "gunicorn", 
-              "core.wsgi:application",
-              "-c", 
-              "gunicorn.conf.py"
-              ]
-    # ports:
-    #   - "8000:8000"
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    command: [ "./scripts/django/entrypoint.sh", "gunicorn", "core.wsgi:application", "-c", "gunicorn.conf.py" ]
     expose:
       - "8000"
     environment:
@@ -88,8 +85,4 @@ services:
       - "./shared/pgadmin:/var/lib/pgadmin"
     networks:
       - default
-    restart: always  
-  
-networks:
-  default:
-    driver: bridge
+    restart: always

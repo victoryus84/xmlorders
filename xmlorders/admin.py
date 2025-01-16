@@ -1,6 +1,17 @@
 from django.contrib import admin
-from .models import Category, Product, Order
+from .models import *
 
+admin.site.register(Client)
 admin.site.register(Category)
 admin.site.register(Product)
-admin.site.register(Order)
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+
+class OrderAdmin(admin.ModelAdmin):
+    model = Order
+    readonly_fields = ['created_at']
+    inlines = [OrderItemInline]
+
+admin.site.register(Order, OrderAdmin)
