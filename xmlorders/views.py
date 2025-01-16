@@ -39,9 +39,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         pending_orders = Order.objects.filter(status='pending', representative=request.user)
         serializer = self.get_serializer(pending_orders, many=True)
         return Response(serializer.data)
-    
-    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
-    def order_list(self, request):
-        orders = Order.objects.filter(representative=self.request.user, status='pending')
-        return render(self.request, 'orders/order_list.html', {'orders': orders})
-        
+
+    @action(detail=True, methods=['put'], permission_classes=[permissions.IsAuthenticated])
+    def update_status(self, request, pk=None):
+        """
+        Custom action to update the status of an order.
+        """
+        order = self.get_object()
+        serializer = OrderStatusSerializer(order, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
