@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.models import Group, User
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, mixins
 from rest_framework.decorators import action
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from .models import Order
 from .serializers import UserSerializer, GroupSerializer, OrderSerializer
@@ -23,7 +24,11 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
     
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(mixins.CreateModelMixin,
+                   mixins.RetrieveModelMixin,
+                   mixins.UpdateModelMixin,
+                   mixins.ListModelMixin,
+                   GenericViewSet):
     """
     API endpoint that allows orders to be viewed or edited.
     """
