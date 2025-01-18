@@ -1,0 +1,13 @@
+FROM postgres:latest
+
+# Update the package list and install the PostgreSQL client
+RUN apt-get update && \
+    apt-get install -y postgresql-client
+
+# Create the app directory
+RUN mkdir /app
+
+# Set the working directory inside the container
+WORKDIR /app
+
+ENV POSTGRES_HOST_AUTH_METHOD=md5

@@ -23,5 +23,8 @@ if not User.objects.filter(username=username).exists():
     User.objects.create_superuser(username, email, password)
 EOF
 
+# Collect static files
+python manage.py collectstatic --noinput
+
 # Start the Django server
 exec "$@"
