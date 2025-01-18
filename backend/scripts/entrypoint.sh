@@ -11,8 +11,12 @@ set -e
 # python manage.py clearsessions
 
 # Apply django makemigrations
+echo "Makemigrations for PostgreSQL..."
 python manage.py makemigrations
+echo "Done makemigrations"
+echo "Migrate for PostgreSQL..."
 python manage.py migrate
+echo "Done migrate"
 
 # Create superuser if it doesn't exist
 python manage.py shell <<EOF
