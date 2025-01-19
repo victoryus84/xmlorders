@@ -11,7 +11,7 @@ class OrderItemInline(admin.TabularInline):
 
 class OrderAdmin(admin.ModelAdmin):
     model = Order
-    readonly_fields = ['created_at']
+    readonly_fields = ['representative', 'created_at']
     inlines = [OrderItemInline]
 
 admin.site.register(Order, OrderAdmin)

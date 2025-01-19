@@ -53,12 +53,12 @@ class Order(models.Model):
         ('approved', 'Approved'),
         ('delivered', 'Delivered'),
     ]
-    representative = models.ForeignKey(User, on_delete=models.CASCADE)
     client =  models.ForeignKey(Client, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, through='OrderItem')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
-
+    representative = models.ForeignKey(User, verbose_name="Author", on_delete=models.CASCADE)
+    
     def __str__(self):
         return f"{self.created_at} - {self.status} - {self.client} "
 
