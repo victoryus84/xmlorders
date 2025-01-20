@@ -27,7 +27,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.django
     env_file:
-        - ./.env  
+        - ./.env
     volumes:
       - ./backend:/app
     networks:
@@ -78,6 +78,4 @@ services:
       - default
     restart: unless-stopped
     depends_on:
-      - db_app
-
- 
+      - db_app 
