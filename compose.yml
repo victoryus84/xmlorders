@@ -78,6 +78,4 @@ services:
       - default
     restart: unless-stopped
     depends_on:
-      - db_app
-
- 
+      - db_app 
