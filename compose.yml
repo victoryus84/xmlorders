@@ -27,7 +27,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.django
     env_file:
-        - ./.env  
+        - ./.env
     volumes:
       - ./backend:/app
     networks:
