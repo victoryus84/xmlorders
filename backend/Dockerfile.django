@@ -2,6 +2,7 @@ FROM python:3.12
 
 # Update the package list and install the PostgreSQL client
 RUN apt-get update && apt-get install -y \
+    bash \
     gcc \
     libpq-dev \
     curl \
@@ -32,7 +33,7 @@ COPY . /app/
 
 # Set execute permissions on the entrypoint script
 RUN chmod +x /app/scripts/entrypoint.sh
-ENTRYPOINT [ "scripts/entrypoint.sh" ] 
+ENTRYPOINT [ "bash", "app/scripts/entrypoint.sh" ] 
 
 # Expose the Django port
 EXPOSE 8000
