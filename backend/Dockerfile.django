@@ -33,9 +33,9 @@ COPY . /app/
 
 # Set execute permissions on the entrypoint script
 RUN chmod +x /app/scripts/entrypoint.sh
-ENTRYPOINT [ "bash", "app/scripts/entrypoint.sh" ] 
+ENTRYPOINT [ "bash", "/app/scripts/entrypoint.sh" ] 
 
-# Expose the Django port
+# Expose the Django portx
 EXPOSE 8000
 
 # Start the application using gunicorn
