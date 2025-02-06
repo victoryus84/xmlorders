@@ -9,9 +9,6 @@ RUN apt-get update && apt-get install -y \
     postgresql-client && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create the app directory
-RUN mkdir /app
-
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -25,18 +22,13 @@ ENV PYTHONUNBUFFERED=1
 RUN python -m pip install --upgrade pip
 
 # Copy the requirements file and install dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the Django project to the container
 COPY . /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Set execute permissions on the entrypoint script
 RUN chmod +x /app/scripts/entrypoint.sh
+# Set entrypoint
 ENTRYPOINT [ "bash", "/app/scripts/entrypoint.sh" ] 
 
 # Expose the Django portx
 EXPOSE 8000
-
-# Start the application using gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:8000", "core.wsgi:application"]
